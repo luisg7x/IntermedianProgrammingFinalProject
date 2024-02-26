@@ -1,0 +1,22 @@
+{
+    "name": "FLAMINGO",
+    "address": "Calle Remilia",
+    "number_of_rooms": "45",
+    "price_night": "40$",
+    "services": {
+        "Restaurants": [
+            {
+                "id": "R-001",
+                "name": "FLAMINGO",
+                "schedule": "24h",
+                "price": "25$",
+                "availability": "YES",
+                "capacity": "75",
+                "location": "Second Floor",
+                "cuisine": "Flameos",
+                "rating": "10/5"
+            }
+        ],
+        "Spas": []
+    }
+}

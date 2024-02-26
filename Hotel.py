@@ -6,6 +6,7 @@ class Hotel:
         self.price_night = price_night
         self.services = services
 
-    
+    # Define a reprJSON method that returns a dict of the attributes
+    def reprJSON(self):
+        return self.__dict__
 
-        

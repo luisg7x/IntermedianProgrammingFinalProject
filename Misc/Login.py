@@ -1,17 +1,13 @@
 from Misc.JsonManager import JsonManager
-import Staff as staff
+from Staff import Staff
 class Login:
-    def is_valid(username, password):
-        
-        try:
-            data = JsonManager.load_from_json("Staff.json")
-            staff1 = staff(**data)
-            if staff1.username == username and staff1.password == password:
-                return staff1
-            elif staff1 is not None:
-                return 1
-            else:
-                return 2
-        except:
-            print("System could not find Staff.json")
+    def is_valid(user, password, filename):
+
+        data = JsonManager.load_from_json(filename)
+        staff1 = Staff(**data)
+        if staff1.user == user and staff1.password == password:
+            return staff1
+        else:
+            return None
+
 
