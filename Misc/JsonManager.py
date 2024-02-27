@@ -43,24 +43,3 @@ class JsonManager:
         else:
            return False
         
-
-
-        # Open the JSON file and load the data
-        with open("data.json") as json_file:
-            data = json.load(json_file)
-
-        # Create a Hotel object from the data
-        hotel = Hotel(**data)
-
-        # Create a list of Restaurant objects from the data
-        restaurants = []
-        for restaurant_data in data["services"][0]:
-            restaurant = Restaurant(**restaurant_data)
-            restaurants.append(restaurant)
-
-        # Create a list of Spa objects from the data
-        spas = []
-        for spa_data in data["services"][1]:
-            spa = Spa(**spa_data)
-            spas.append(spa)
-
