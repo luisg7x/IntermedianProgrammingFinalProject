@@ -1,22 +1,44 @@
 {
     "name": "FLAMINGO",
     "address": "Calle Remilia",
-    "number_of_rooms": "45",
-    "price_night": "40$",
+    "number_of_rooms": "50",
+    "available_rooms": "49",
+    "price_night": "50$",
     "services": {
         "Restaurants": [
             {
-                "id": "R-001",
-                "name": "FLAMINGO",
-                "schedule": "24h",
-                "price": "25$",
+                "id": "R-000",
+                "name": "Rosseta",
+                "schedule": "12h-22h",
+                "price": "30$",
                 "availability": "YES",
-                "capacity": "75",
+                "capacity": "80",
                 "location": "Second Floor",
-                "cuisine": "Flameos",
-                "rating": "10/5"
+                "cuisine": "France Food",
+                "rating": "4.2/5"
+            },
+            {
+                "id": "R-001",
+                "name": "Mexco",
+                "schedule": "10h-23h",
+                "price": "24$",
+                "availability": "YES",
+                "capacity": "25",
+                "location": "Second Floor",
+                "cuisine": "Mexican Food",
+                "rating": "4/5"
             }
         ],
-        "Spas": []
+        "Spas": [
+            {
+                "id": "S-000",
+                "name": "ProSpa",
+                "schedule": "6h-22h",
+                "price": "20$",
+                "availability": "YES",
+                "capacity": "15",
+                "location": "Four Floor"
+            }
+        ]
     }
 }
