@@ -12,11 +12,12 @@ print ("Welcome to Hotel Administrator Program")
 #SEE ROLES CONCRETE FUCTIONS
 #OPTIMIZATION
 #IMPLEMENT EXEPTIONS
-#FIX Incorporar variables locales y globales.
-# Incorporar métodos de cadena y librerías.
-#  iteradores y generadores.
-# reación y lectura de archivos en el código
-#  3 excepciones
+#FIX 
+# Incorporar métodos de cadena y librerías. comparing if ID has the requiered format, otherwise apply it
+#  iteradores y generadores. still unkown 
+# reación y lectura de archivos en el código. for logs?
+
+#ASK how many night - which services - sums upp every night an service - reduce amount of rooms available
 
 #Flag to register whether the user is logged or not
 logged = False
@@ -33,20 +34,15 @@ services = {
 files_names = (
     "STAFF.json",
     "HOTEL.json",
-    "CLIENT.json"
+    "CLIENT.json",
 )
-
-#defining the secret key and time limit if that will be used if there is not user in the data base
-secret_key = "g"
-time_limit = "5"
-
 
 #REGISTERING ADMIN FOR FIRST TIME
 #staff1 = staff("1-1111-1111", "Admin", "Admin", "Admin", "Admin")
 #JsonManager.save_as_json(staff1, "Staff.json")
 #print("saved")
 
-
+#infite loop til the person get authenticated
 while not logged:
 
     print("-------------------")
@@ -190,7 +186,6 @@ def show_create_hotel_menu():
     else:
         sys.exit("Please loggin with an admin account to create a Hotel")
 
-
 def show_menu_hotel():
     hotel1 = load_hotel_file()
     while True:
@@ -207,7 +202,9 @@ def show_menu_hotel():
         print("6- Exit program")
         #Displaying options
         service_value = int(input("Options 1,2,3,4,5: "))
-        
+        #option for edit and delete restaurant and spas
+        options_edit_del = [3,4,7,8]
+
         if service_value == 3:
             print("------------------------------------------------")
             print("Menu options:")
@@ -216,32 +213,42 @@ def show_menu_hotel():
             if len(hotel1.services["Restaurants"]) >= 1:
                 print("3- Edit specific restaurant by ID")
                 print("4- Delete specific restaurant by ID")
-            option_value = int(input("Options 1,2,3,4,5: "))
+            print("6- Show all Spa")
+            if len(hotel1.services["Spas"]) >= 1:
+                print("7- Edit specific Spa by ID")
+                print("8- Delete specific Spa by ID")
+            option_value = int(input("Options 1,2,3,4,5,6,7,8: "))
             #Filtering option selected by the user
-            if option_value == 1:
-                print(hotel1.services["Restaurants"])
+            if (option_value == 1) or (option_value ==6):
+                #printing every restaurant or spa
+                print(hotel1.services["Restaurants" if option_value == 1 else "Spas"])
             elif option_value == 2:
+                #calling the methond to add new services, sending 2 atributes
                 hotel1.services = add_services(True, hotel1)
                 save_hotel(hotel1)
-            elif option_value == 3 or 4:
+
+            
+            elif option_value in options_edit_del:
+                #As there is only 2 services, we are checking if the option selected is related with.
+                is_restaurant = True if (option_value == 3) or (option_value == 4) else False
                 #asking for the id 
                 print("------------------------------------------------")
-                by_id = input("Type any Restaurant ID: ")
+                by_id = input(f"Type any {"Restaurant ID" if is_restaurant else "Spa ID"}: ")
                 #flag to exit the loop
                 flag = True
                 #looking which restaurant has the id typed by the user
                 #dictionary in lists
-                for index, rest in enumerate(hotel1.services["Restaurants"]):
-                    rest1 = restaurant_class(**rest)
-                    restaurant_dict = {}
+                for index, value in enumerate(hotel1.services["Restaurants" if is_restaurant  else "Spas"]):
+                    #new dictionary that will storage create a format to storage with a number key every item that will be asked or printed
+                    class_dict = {}
                     #displaying options
-                    if rest1.id == by_id:
+                    if hotel1.services["Restaurants" if is_restaurant  else "Spas"][index]["id"] == by_id:
                         #LOOP in case user wants to continue modifying
                         while flag:
                             #verifying delete option
-                            if option_value == 4:
+                            if (option_value == 4) or (option_value == 8):
                                 #deleteting element on the list by index
-                                del hotel1.services["Restaurants"][index]
+                                del hotel1.services["Restaurants" if is_restaurant else "Spas"][index]
                                 save_hotel(hotel1)
                                 flag = False
                             #Continue with editing
@@ -249,19 +256,19 @@ def show_menu_hotel():
                                 print("------------------------------------------------")
                                 print("Which element would like to edit?")
                                 # creating a dictionaty with the numbers option
-                                # Counter for keys in restaurant_dict
+                                # Counter for keys in class_dict
                                 counter = 1
                                 # Iterate through items, and printing options
-                                for key, value in rest1.__dict__.items():
-                                    restaurant_dict[counter] = [key, value]
+                                for key, value in hotel1.services["Restaurants" if is_restaurant  else "Spas"][index].items():
+                                    class_dict[counter] = [key, value]
                                     print(f"{counter} - {key} : {value}")
                                     counter += 1
 
                                     
-                                option = int(input(f"Type the option that you want to change (1-{len(restaurant_dict)}): "))
+                                option = int(input(f"Type the option that you want to change (1-{len(class_dict)}): "))
                                 #looking for the option selected
-                                if option in restaurant_dict:
-                                    new_value = input(f"Type the new value for {option} - {restaurant_dict[option][0]} : {restaurant_dict[option][1]} -->")
+                                if option in class_dict:
+                                    new_value = input(f"Type the new value for {option} - {class_dict[option][0]} : {class_dict[option][1]} -->")
                                     #Iterate bewtween every attribute on class restaurant
                                     #for attr in vars(rest1):
                                         #if attribute exist i'll be changed
@@ -271,20 +278,20 @@ def show_menu_hotel():
                                     #dictionary of services, get only the elements owned by key "restaurant" (a list of dictionaries or a list of many restaurants)
                                     #index = of the dictionary in the list.
                                     #restaurant_dict[option][0] = which attribute in the dictionary will be modified
-                                    hotel1.services["Restaurants"][index][restaurant_dict[option][0]] = new_value
-
+                                    hotel1.services["Restaurants" if is_restaurant else "Spas"][index][class_dict[option][0]] = new_value
+                                    save_hotel(hotel1)
                                 #IMPLEMENTS EXEPTION ON THAT FOR 
                                                 
                                 # ask the user if they want to add more services
-                                answer = input("Would like to continue modifiying this restaurant? (y/n): ")
+                                answer = input("Would like to continue modifiying this service? (y/n): ")
 
                                 # check if the user wants to exit the loop
                                 if answer.lower() == "n":
-                                    save_hotel(hotel1)
                                     flag = False
                     
                     if flag is not True:
                         break
+                
         elif service_value == 4:
             print("------------------------------------------------")
             print("Name: " + hotel1.name)
@@ -322,7 +329,6 @@ def show_menu_hotel():
             elif option == 6:
                 continue
                 
-
         elif option_value == 6:
             sys.exit("Program has been closed by the user")
 
@@ -337,8 +343,6 @@ def show_menu_hotel():
             #for restaurant in restaurants:
             #    print(f"{restaurant['name']} has a rating of {restaurant['rating']}.")
 
-
-
 def load_hotel_menu():
     if get_staff_id == "EMPLOYEE" or "ADMIN":
         if check_if_file_exist(files_names[1]):
@@ -350,9 +354,6 @@ def load_hotel_menu():
             load_hotel_menu()
     else:
         sys.exit("Unathorized access")
-
-            
-
 
 print("Welcome "+ (staff1.name) + " role: " + get_staff_id())
 print("-------------------")
