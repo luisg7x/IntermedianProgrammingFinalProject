@@ -1,6 +1,6 @@
 from Service import Service as service
 
-class spa(service):
+class Spa(service):
     def __init__(self, id,  name, schedule, price, capacity, availability, location):
         # call the parent class constructor to inherit the common attributes
         service.__init__(self, id, name, schedule, price, capacity, availability, location)

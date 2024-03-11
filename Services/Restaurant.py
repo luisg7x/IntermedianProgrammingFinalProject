@@ -1,6 +1,6 @@
 from Service import Service as service
 
-class restaurant(service):
+class Restaurant(service):
     def __init__(self, id, name, schedule, price, capacity, availability, location, cuisine, rating):
         # call the parent class constructor to inherit the common attributes
         service.__init__(self, id, name, schedule, price, capacity, availability, location)

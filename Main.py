@@ -2,48 +2,51 @@ from Misc.JsonManager import JsonManager
 from Misc.Login import Login
 from Hotel import Hotel as hotel_class
 from Staff import Staff as staff_class
-from Services.restaurant import restaurant as restaurant_class
-from Services.spa import spa as spa_class
-from Client import Client
+from Services.Restaurant import Restaurant as restaurant_class
+from Services.Spa import Spa as spa_class
+from Client import Client as client_class
 import sys
 
 print("-------------------")
 print ("Welcome to Hotel Administrator Program")
 
-#SEE ROLES CONCRETE FUCTIONS
-#OPTIMIZATION
-#IMPLEMENT EXEPTIONS
-#FIX 
-# Incorporar métodos de cadena y librerías. comparing if ID has the requiered format, otherwise apply it
-#  iteradores y generadores. still unkown 
-# reación y lectura de archivos en el código. for logs?
+#---------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!--------------------------------------------
 
-#ASK how many night - which services - sums upp every night an service - reduce amount of rooms available
+#Check/ To implement:
+# ROLES FUCTIONS ?
+# OPTIMIZATION 
+# Check if services that the client will use, actually exist (adding client) id services can be printed to make it easer to type in
+# Edit client function is missing
+# check email, id format, add $symbol on every "price" related field, check if ids already exist when adding a new one 
+
+#Missing from PDF: 
+# Incorporar métodos de cadena y librerías !! DONE ????
+# Creación y lectura de archivos en el código. Can be implemented by creating logs and reading them and show them on the console if the user is an admin
+
+#---------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!--------------------------------------------
 
 #Flag to register whether the user is logged or not
 logged = False
 #Storage staff after login check
 staff1 = staff_class
-# dictionary with the services available to be added to the hotel
+#Dictionary with the services available to be added to the hotel
 services = {
     1 : "RESTAURANT",
-    2 : "SPA",
-    3 : "GYM", 
-    4 : "EVENTS"
+    2 : "SPA"
 }
-# tuple with the file names of every json
+#Tuple with the name of each json file  
 files_names = (
     "STAFF.json",
     "HOTEL.json",
     "CLIENT.json",
 )
 
-#REGISTERING ADMIN FOR FIRST TIME
+#REGISTERING ADMIN FOR FIRST TIME (!!!ONLY RUN IF THERE IS NOT AN ADMIN USER YET!!!)
 #staff1 = staff("1-1111-1111", "Admin", "Admin", "Admin", "Admin")
 #JsonManager.save_as_json(staff1, "Staff.json")
 #print("saved")
 
-#infite loop til the person get authenticated
+#Infite while loop til the person get authenticated
 while not logged:
 
     print("-------------------")
@@ -68,36 +71,48 @@ while not logged:
         print("Login failed. Please try again.")
         print("-------------------")
 
+#Function to save the hotel to a json file.
 def save_hotel(hotel : hotel_class):
     JsonManager.save_as_json(hotel, files_names[1])
-                                
+
+def save_client(client : client_class):
+    JsonManager.save_as_json(client, files_names[2])
+
+#Function to check if any file exists                    
 def check_if_file_exist(filename):
     return JsonManager.check_if_file_exist(filename)
 
+#Function to load the json hotel file.
 def load_hotel_file():
     data = JsonManager.load_from_json(files_names[1])
     hotel1 = hotel_class(**data)
+    #check if the json file contains or has any data.
     if hotel1 is None:
         sys.exit("ERROR: Hotel file is empty")
     else:
         print("Systems for Hotel: " + hotel1.name + " have been loaded succesfully")
         print("-------------------")
         return hotel1
-    
-def get_staff_id():
+
+#Function to return the staff role    
+def get_staff_role():
+    #check if is logged
     if logged:
         return staff1.role.upper()
     else:
-        sys.exit("Could find staff role")
+        sys.exit("Could not find staff role")
 
+#Function to add new services to a new hotel that is being created or add new servcies to an already existing hotel
 def add_services(add_To_Exising : bool, hotel : hotel_class):
+    #check if the method is being called add services to an already existing hotel.
     if add_To_Exising:
         restaurants = hotel.services["Restaurants"]
         spas = hotel.services["Spas"]
     else: 
         restaurants = []
         spas = []
-                    
+
+    #Infinity loop to show the "add services menu"              
     while True:
         print("-------------------")
         print("Registering a services for Hotel")
@@ -122,6 +137,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
             capacity = input("Enter capacity: ")
             location = input("Enter location: ")
 
+            #Check if the option is 1
             if service_value == 1:
                 cuisine = input("Enter cuisine: ")
                 rating = input("Enter rating: ")
@@ -131,6 +147,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
                 # append the restaurant object to the list
                 restaurants.append(restaurant1)
 
+            #Check if the option is 2
             elif service_value == 2:
                 # create a spa object
                 spa1 = spa_class(id, name, schedule, price, availability, capacity, location)
@@ -144,7 +161,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
             # check if the user wants to exit the loop
             if answer.lower() == "n":
                 break
-
+        #Check if the option is 5
         elif service_value == 5:
             # exit the loop
             break
@@ -153,54 +170,73 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
             # print a message that the input is invalid
             print("Invalid option. Please enter a number between 1 and 5.")
 
-    #creating a dictionary with the data and dividing it and return it
+    #creating a dictionary with the data that have been added and returning it
     return {"Restaurants": restaurants, "Spas": spas}
 
-# Function to update available rooms in the hotel data
-def update_available_rooms(hotel_data, rooms_booked):
-    hotel_data['available_rooms'] = str(int(hotel_data['available_rooms']) - rooms_booked)
-    return hotel_data
+#Function to update available rooms in the hotel data
+def update_available_rooms(hotel):
+    #update rooms available
+    hotel.available_rooms = str(int(hotel["available_rooms"]) - 1)
+    #save hotel
+    save_hotel(hotel)
 
-# Function to prompt for client information
-def get_client_info():
+
+#Function to prompt for client information
+def get_client_data():
     id = input("Enter client ID: ")
     name = input("Enter client name: ")
     email = input("Enter client email: ")
-    is_Hosted = input("Is the client currently hosted? (yes/no): ").lower() == 'yes'
+    number_nights = int(input("Enter number of nights: "))
+    id_services = input("Enter service IDs (comma-separated): ").split(',')
     phone_number = input("Enter client phone number: ")
-    payment_method = input("Enter client payment method: ")
-    return Client(id, name, email, is_Hosted, phone_number, payment_method)
+    payment_method = input("Enter payment method: ")
+    return client_class(id, name, email, number_nights, id_services, phone_number, payment_method, 0)
 
-# Function to add client information and calculate total cost
-def add_client_info(client, hotel_services, days_stayed):
+#Fuction that uses a Generator to iterate over services in 'Restaurants' and 'Spas'
+def services_used(hotel_services, id_services):
+    #Iterate over each category in services
+    for category in hotel_services:
+        #Iterate over each service in the category
+        for service in hotel_services[category]:
+            #Check if the service ID is in the list of service IDs
+            if service['id'] in id_services:
+                yield service
+
+#Function to calculate the total cost for the client
+def calculate_total(client, hotel):
+    #Create a generator for the client's used services
+    used_services = services_used(hotel['services'], client.id_services)
+    #Use the service_generator to iterate over all services and string methods
+    total = sum(float(service['price'].strip('$')) for service in used_services)
+    #Add the price per night, and using string methods
+    total += float(hotel["price_night"].strip("$")) * client.number_nights
+    return total
+
+#Function to add client information and calculate total cost
+def add_client(hotel: hotel_class):
+    #Checks if there is any available room 
+    try:
+        if int(hotel["available_rooms"]) <= 0:
+            print("There is not any available room")
+            return
+    except ValueError:
+        print("Error on number of rooms available, check file")
     
-    #CHECK IF THERE ARE ROOMS AVAILABLE
+    #Call "get_client_data" fuction
+    client = get_client_data()
 
-    #LOAD HOTEL 1
-    days_stayed = int(input("Enter the number of nights stayed: "))
-    rooms_booked = int(input("Enter the number of rooms booked: "))
+    #Calculate total and updates it
+    client.total = calculate_total(client, hotel)
+
+    #Update hotel data 
+    update_available_rooms(hotel)
     
-    # Update hotel data and save client information
-    hotel_data = update_available_rooms(hotel_data, rooms_booked)
-    add_client_info(client, hotel_data['services'], days_stayed)
-    
-    #CHECK THE CODE FROM ABOVE AND ADAPT IT
+    #Save client json
+    save_client(client)
 
-
-    client_info = vars(client)  # Convert client object to dictionary
-    total_cost = 0
-    services_cost = sum(float(service['price'].strip('$')) for _, service in client.services_used(hotel_services))
-    total_cost += services_cost
-    total_cost += days_stayed * float(hotel['price_night'].strip('$'))
-    client_info['total_cost'] = f"{total_cost}$"
-
-    
-    # Save to JSON file
-    with open('client_info.json', 'w') as file:
-        json.dump(client_info, file, indent=4)
-
+#Function to display "add new hotel" options, therefore it will create a new hotel.
 def show_create_hotel_menu():
-    if get_staff_id == "ADMIN":
+    if get_staff_role == "ADMIN":
 
             print("There is not any Hotel registered, would like to register one? y/n")
             option = input("Options: y/n -> ")
@@ -216,9 +252,11 @@ def show_create_hotel_menu():
                 available_rooms = input("Enter number of available rooms: ")
                 price_night = input("Enter price one night: ")
 
-                
+                #Calling add_services fuction, and marking it as new services for a new hotel
                 service = add_services(False)
+                #Assigning the attributes to the hotel class.
                 hotel1 = hotel_class(name, address, number_of_rooms, available_rooms, price_night, service)
+                #Calling save_hotel fuction to save and create hotel.json file
                 save_hotel(hotel1)
 
                 
@@ -230,6 +268,7 @@ def show_create_hotel_menu():
     else:
         sys.exit("Please loggin with an admin account to create a Hotel")
 
+#Fuction to display and capture the option of the "Hotel main menu"
 def show_menu_hotel():
     hotel1 = load_hotel_file()
     while True:
@@ -245,29 +284,39 @@ def show_menu_hotel():
         print("5- Edit hotel information")
         print("6- Exit program")
         #Displaying options
-        service_value = int(input("Options 1,2,3,4,5: "))
-        #option for edit and delete restaurant and spas
+        service_value = int(input("Options 1,2,3,4,5,6: "))
+        #options in the menu for edit and delete restaurant and spas
         options_edit_del = [3,4,7,8]
 
+        #Checking if option is 1
+        if service_value == 1:
+            add_client(hotel1)
+        #Checking if the option is 3
         if service_value == 3:
             print("------------------------------------------------")
             print("Menu options:")
             print("1- Show all Restaurants")
             print("2- Add services")
+            #checking if there is any restaurant, otherwise it will not print the options
             if len(hotel1.services["Restaurants"]) >= 1:
                 print("3- Edit specific restaurant by ID")
                 print("4- Delete specific restaurant by ID")
+
             print("6- Show all Spa")
+            #checking if there is any Spa, otherwise it will not print the options
             if len(hotel1.services["Spas"]) >= 1:
                 print("7- Edit specific Spa by ID")
                 print("8- Delete specific Spa by ID")
+
+            #!!!!!!!!!!!!!!!!!!! IT NEEDS TO BE MODIFIED BECAUSE NOT EVERY OPTION WILL BE PRINTED!!!!!!!!!!!!!!!!!!!!!!!!!
             option_value = int(input("Options 1,2,3,4,5,6,7,8: "))
+
             #Filtering option selected by the user
             if (option_value == 1) or (option_value ==6):
                 #printing every restaurant or spa
                 print(hotel1.services["Restaurants" if option_value == 1 else "Spas"])
             elif option_value == 2:
-                #calling the methond to add new services, sending 2 atributes
+                #calling add services fuction, sending 2 atributes, new services to a not new hotel, and current hotel information.
                 hotel1.services = add_services(True, hotel1)
                 save_hotel(hotel1)
 
@@ -280,10 +329,9 @@ def show_menu_hotel():
                 by_id = input(f"Type any {"Restaurant ID" if is_restaurant else "Spa ID"}: ")
                 #flag to exit the loop
                 flag = True
-                #looking which restaurant has the id typed by the user
-                #dictionary in lists
+                #looking which restaurant has the id typed by the user, !!those ternarial comparations need to be improved!!!.
                 for index, value in enumerate(hotel1.services["Restaurants" if is_restaurant  else "Spas"]):
-                    #new dictionary that will storage create a format to storage with a number key every item that will be asked or printed
+                    #new dictionary that will create a new format to storage a number key for every item that will be printed
                     class_dict = {}
                     #displaying options
                     if hotel1.services["Restaurants" if is_restaurant  else "Spas"][index]["id"] == by_id:
@@ -291,7 +339,7 @@ def show_menu_hotel():
                         while flag:
                             #verifying delete option
                             if (option_value == 4) or (option_value == 8):
-                                #deleteting element on the list by index
+                                #deleting element on the list by index
                                 del hotel1.services["Restaurants" if is_restaurant else "Spas"][index]
                                 save_hotel(hotel1)
                                 flag = False
@@ -304,15 +352,18 @@ def show_menu_hotel():
                                 counter = 1
                                 # Iterate through items, and printing options
                                 for key, value in hotel1.services["Restaurants" if is_restaurant  else "Spas"][index].items():
+                                    #storaring data in the "class_dict" dictionary
                                     class_dict[counter] = [key, value]
                                     print(f"{counter} - {key} : {value}")
                                     counter += 1
 
-                                    
+                                #Ask the user for an option
                                 option = int(input(f"Type the option that you want to change (1-{len(class_dict)}): "))
                                 #looking for the option selected
                                 if option in class_dict:
+                                    #asking the user for a value that will modify the previous one
                                     new_value = input(f"Type the new value for {option} - {class_dict[option][0]} : {class_dict[option][1]} -->")
+                                  
                                     #Iterate bewtween every attribute on class restaurant
                                     #for attr in vars(rest1):
                                         #if attribute exist i'll be changed
@@ -322,9 +373,11 @@ def show_menu_hotel():
                                     #dictionary of services, get only the elements owned by key "restaurant" (a list of dictionaries or a list of many restaurants)
                                     #index = of the dictionary in the list.
                                     #restaurant_dict[option][0] = which attribute in the dictionary will be modified
+
+                                    #aplying modification in the hotel
                                     hotel1.services["Restaurants" if is_restaurant else "Spas"][index][class_dict[option][0]] = new_value
+                                    #calling "save_hotel". Saving hotel
                                     save_hotel(hotel1)
-                                #IMPLEMENTS EXEPTION ON THAT FOR 
                                                 
                                 # ask the user if they want to add more services
                                 answer = input("Would like to continue modifiying this service? (y/n): ")
@@ -333,9 +386,11 @@ def show_menu_hotel():
                                 if answer.lower() == "n":
                                     flag = False
                     
+                    #check is if the loop has to be broken
                     if flag is not True:
                         break
                 
+        #checks if the value is 4 and print the options
         elif service_value == 4:
             print("------------------------------------------------")
             print("Name: " + hotel1.name)
@@ -344,6 +399,7 @@ def show_menu_hotel():
             print("Number of Rooms: " + hotel1.number_of_rooms)
             print("Available Rooms: " + hotel1.available_rooms)
 
+        #checks if the value is 5 and print the options
         elif service_value == 5:
             print("------------------------------------------------")
             print("Select the option that you want to edit:")
@@ -354,7 +410,9 @@ def show_menu_hotel():
             print("5 - Available Rooms: " + hotel1.available_rooms)
             print("6 - Exit")
 
+            #ask the user for an option
             option = int(input(f"Type the option that you want to change (1-5): "))
+            #every if check which one is the one that has been selected and request new data to create to edit the hotel.
             if option == 1:
                 hotel1.name = input("Enter the new name: ")
                 save_hotel(hotel1)
@@ -373,7 +431,7 @@ def show_menu_hotel():
             elif option == 6:
                 continue
                 
-        elif option_value == 6:
+        elif service_value == 6:
             sys.exit("Program has been closed by the user")
 
             # Get the restaurants and spas from the data
@@ -387,21 +445,27 @@ def show_menu_hotel():
             #for restaurant in restaurants:
             #    print(f"{restaurant['name']} has a rating of {restaurant['rating']}.")
 
+#Main fuction, to check roles and load the menu
 def load_hotel_menu():
-    if get_staff_id == "EMPLOYEE" or "ADMIN":
+    #checks staff role
+    if get_staff_role == "EMPLOYEE" or "ADMIN":
+        #check if there is a hotel already registered and loads menus
         if check_if_file_exist(files_names[1]):
             load_hotel_file()
             show_menu_hotel()
         else:
+            #dispoaly menu to create hotel
             show_create_hotel_menu()
             #recursivity?
             load_hotel_menu()
     else:
         sys.exit("Unathorized access")
 
-print("Welcome "+ (staff1.name) + " role: " + get_staff_id())
+#Print staff info
+print("Welcome "+ (staff1.name) + " role: " + get_staff_role())
 print("-------------------")
 
+#calls the main fuction
 load_hotel_menu()
 
 

@@ -8,14 +8,10 @@ class Service:
         self.capacity = capacity
         self.location = location
 
-    def display_info(self):
-        print(f"ID: {self.id}")
-        print(f"Name: {self.name}")
-        print(f"Schedule: {self.schedule}")
-        print(f"Price: {self.price}")
-        print(f"Capacity: {self.capacity}")
-        print(f"Availability: {self.availability}")
-        print(f"Location: {self.location}")
+    # Implementing the __getitem__ method to allow subscripting
+    def __getitem__(self, key):
+        return getattr(self, key)
+
 
 
 
