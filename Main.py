@@ -4,6 +4,7 @@ from Hotel import Hotel as hotel_class
 from Staff import Staff as staff_class
 from Services.restaurant import restaurant as restaurant_class
 from Services.spa import spa as spa_class
+from Client import Client
 import sys
 
 print("-------------------")
@@ -154,6 +155,49 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
 
     #creating a dictionary with the data and dividing it and return it
     return {"Restaurants": restaurants, "Spas": spas}
+
+# Function to update available rooms in the hotel data
+def update_available_rooms(hotel_data, rooms_booked):
+    hotel_data['available_rooms'] = str(int(hotel_data['available_rooms']) - rooms_booked)
+    return hotel_data
+
+# Function to prompt for client information
+def get_client_info():
+    id = input("Enter client ID: ")
+    name = input("Enter client name: ")
+    email = input("Enter client email: ")
+    is_Hosted = input("Is the client currently hosted? (yes/no): ").lower() == 'yes'
+    phone_number = input("Enter client phone number: ")
+    payment_method = input("Enter client payment method: ")
+    return Client(id, name, email, is_Hosted, phone_number, payment_method)
+
+# Function to add client information and calculate total cost
+def add_client_info(client, hotel_services, days_stayed):
+    
+    #CHECK IF THERE ARE ROOMS AVAILABLE
+
+    #LOAD HOTEL 1
+    days_stayed = int(input("Enter the number of nights stayed: "))
+    rooms_booked = int(input("Enter the number of rooms booked: "))
+    
+    # Update hotel data and save client information
+    hotel_data = update_available_rooms(hotel_data, rooms_booked)
+    add_client_info(client, hotel_data['services'], days_stayed)
+    
+    #CHECK THE CODE FROM ABOVE AND ADAPT IT
+
+
+    client_info = vars(client)  # Convert client object to dictionary
+    total_cost = 0
+    services_cost = sum(float(service['price'].strip('$')) for _, service in client.services_used(hotel_services))
+    total_cost += services_cost
+    total_cost += days_stayed * float(hotel['price_night'].strip('$'))
+    client_info['total_cost'] = f"{total_cost}$"
+
+    
+    # Save to JSON file
+    with open('client_info.json', 'w') as file:
+        json.dump(client_info, file, indent=4)
 
 def show_create_hotel_menu():
     if get_staff_id == "ADMIN":
