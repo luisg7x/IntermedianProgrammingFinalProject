@@ -3,17 +3,15 @@ import os.path
 
 # Define a ComplexEncoder class that inherits from json.JSONEncoder
 class ComplexEncoder(json.JSONEncoder):
-    try:
-        # Override the default method
-        def default(self, obj):
-            # Check if the object has a reprJSON method and call it
-            if hasattr(obj, 'reprJSON'):
-                return obj.reprJSON()
-            # Otherwise, use the default encoding behavior
-            else:
-                return json.JSONEncoder.default(self, obj)
-    except Exception as e:
-            print(f"An error occurred: {e}")
+    # Override the default method
+    def default(self, obj):
+        # Check if the object has a reprJSON method and call it
+        if hasattr(obj, 'reprJSON'):
+            return obj.reprJSON()
+        # Otherwise, use the default encoding behavior
+        else:
+            return json.JSONEncoder.default(self, obj)
+
 
 class JsonManager:
 
@@ -39,6 +37,8 @@ class JsonManager:
         except FileNotFoundError:
             # print a message that the file does not exist
             print(f"File {filename} does not exist.")
+        except Exception as e:
+            print(f"Could not load the file.")
 
     # define a method to check whether the file exist
     def check_if_file_exist(filename):

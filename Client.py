@@ -1,13 +1,10 @@
 class Client:
-    def __init__(self, id, name, email, number_nights, id_services, phone_number, payment_method, total):
+    def __init__(self, id, name, email, is_currently_hosted, phone_number):
         self.id = id
         self.name = name
         self.email = email
-        self.number_nights = number_nights
-        self.id_services = id_services
+        self.is_currently_hosted = is_currently_hosted
         self.phone_number = phone_number
-        self.payment_method = payment_method
-        self.total = total
 
     # Define a reprJSON method that returns a dict of the attributes
     def reprJSON(self):

@@ -1,11 +1,16 @@
 from Misc.JsonManager import JsonManager
 from Misc.Login import Login
+from Misc.IdGenerator import IdGenerator
 from Hotel import Hotel as hotel_class
 from Staff import Staff as staff_class
 from Services.Restaurant import Restaurant as restaurant_class
 from Services.Spa import Spa as spa_class
 from Client import Client as client_class
+from Invoice import Invoice as invoice_class
 import sys
+import os
+from datetime import datetime, timedelta
+
 
 print("-------------------")
 print ("Welcome to Hotel Administrator Program")
@@ -39,12 +44,20 @@ files_names = (
     "STAFF.json",
     "HOTEL.json",
     "CLIENT.json",
+    "INVOICE.json"
 )
+#etting the current date
+current_date = datetime.now()
 
 #REGISTERING ADMIN FOR FIRST TIME (!!!ONLY RUN IF THERE IS NOT AN ADMIN USER YET!!!)
 #staff1 = staff("1-1111-1111", "Admin", "Admin", "Admin", "Admin")
 #JsonManager.save_as_json(staff1, "Staff.json")
 #print("saved")
+
+#Function to clean console
+def clear_console():
+    #'cls' for Windows, 'clear' for Unix/Linux
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 #Infite while loop til the person get authenticated
 while not logged:
@@ -64,6 +77,7 @@ while not logged:
         print("Login successful!")
         print("-------------------")
         logged = True
+        clear_console()
         break
     else:
         #If not valid, print a failure message and continue the loop
@@ -78,21 +92,51 @@ def save_hotel(hotel : hotel_class):
 def save_client(client : client_class):
     JsonManager.save_as_json(client, files_names[2])
 
+def save_invoice(invoice : invoice_class):
+    JsonManager.save_as_json(invoice, files_names[3])
+
 #Function to check if any file exists                    
 def check_if_file_exist(filename):
     return JsonManager.check_if_file_exist(filename)
 
 #Function to load the json hotel file.
 def load_hotel_file():
-    data = JsonManager.load_from_json(files_names[1])
-    hotel1 = hotel_class(**data)
-    #check if the json file contains or has any data.
-    if hotel1 is None:
-        sys.exit("ERROR: Hotel file is empty")
-    else:
-        print("Systems for Hotel: " + hotel1.name + " have been loaded succesfully")
-        print("-------------------")
-        return hotel1
+    try:
+        data = JsonManager.load_from_json(files_names[1])
+        data1 = hotel_class(**data)
+        #check if the json file contains or has any data.
+        if data1 is None:
+            sys.exit("ERROR: Hotel file is empty")
+        else:
+            print("Systems for Hotel: " + data1.name + " have been loaded succesfully")
+            print("-------------------")
+            return data1
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+#Function to load the json client file.
+def load_client_file():
+    try:
+        data = JsonManager.load_from_json(files_names[2])
+        #check if the json file contains or has any data.
+        if data is None:
+            sys.exit("ERROR: Client file is empty")
+        else:
+            return data
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+#Function to load the json invoice file.
+def load_invoice_file():
+    try:
+        data = JsonManager.load_from_json(files_names[3])
+        #check if the json file contains or has any data.
+        if data is None:
+            sys.exit("ERROR: Invoice file is empty")
+        else:
+            return data
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 #Function to return the staff role    
 def get_staff_role():
@@ -102,18 +146,23 @@ def get_staff_role():
     else:
         sys.exit("Could not find staff role")
 
+#Function to convert string date to system datetime
+def parse_date(date_string):
+    return datetime.strptime(date_string, "%d/%m/%Y %H:%M:%S")
+
 #Function to add new services to a new hotel that is being created or add new servcies to an already existing hotel
 def add_services(add_To_Exising : bool, hotel : hotel_class):
     #check if the method is being called add services to an already existing hotel.
     if add_To_Exising:
-        restaurants = hotel.services["Restaurants"]
-        spas = hotel.services["Spas"]
+        restaurants = hotel.services["Restaurant"]
+        spas = hotel.services["Spa"]
     else: 
         restaurants = []
         spas = []
 
     #Infinity loop to show the "add services menu"              
     while True:
+        clear_console()
         print("-------------------")
         print("Registering a services for Hotel")
         print("-------------------")
@@ -128,8 +177,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
 
         #check if the user input is valid
         if service_value in services:
-
-            id = input("Enter id: ") 
+            id_gen = IdGenerator()
             name = input("Enter name: ")
             schedule = input("Enter schedule: ") 
             price = input("Enter price: ")
@@ -139,6 +187,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
 
             #Check if the option is 1
             if service_value == 1:
+                id = id_gen.get_Id(restaurant_class, files_names[1])
                 cuisine = input("Enter cuisine: ")
                 rating = input("Enter rating: ")
                 # create a restaurant object
@@ -149,6 +198,7 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
 
             #Check if the option is 2
             elif service_value == 2:
+                id = id_gen.get_Id(spa_class, files_names[1])
                 # create a spa object
                 spa1 = spa_class(id, name, schedule, price, availability, capacity, location)
 
@@ -171,26 +221,59 @@ def add_services(add_To_Exising : bool, hotel : hotel_class):
             print("Invalid option. Please enter a number between 1 and 5.")
 
     #creating a dictionary with the data that have been added and returning it
-    return {"Restaurants": restaurants, "Spas": spas}
+    return {"Restaurant": restaurants, "Spa": spas}
 
 #Function to update available rooms in the hotel data
-def update_available_rooms(hotel):
-    #update rooms available
-    hotel.available_rooms = str(int(hotel["available_rooms"]) - 1)
-    #save hotel
-    save_hotel(hotel)
+def update_available_rooms(hotel : hotel_class, is_new_reservation : bool):
+    if is_new_reservation:
+        #update rooms available
+        hotel.available_rooms = str(int(hotel["available_rooms"]) - 1)
+        #save hotel
+        save_hotel(hotel)
+        return
+    
+    #check if client and invoice .json files exist 
+    if check_if_file_exist(files_names[2]) and check_if_file_exist(files_names[3]):
+        data_a = load_client_file()
+        data_b = load_invoice_file()
+        client_list = data_a[client_class.__name__]
+        invoice_list = data_b[invoice_class.__name__]
 
+        # Loop, checking each invoice
+        for invoice in invoice_list:
+            departure_date = parse_date(invoice['departure_date'])
+            if departure_date > current_date:
+                id_client = invoice['id_client']
+                # Loop up for the client that need to be modified
+                for client in client_list:
+                    if client['id'] == id_client:
+                        client['is_currently_hosted'] = False
+                        #update rooms available
+                        hotel.available_rooms = str(int(hotel["available_rooms"]) + 1)       
+
+        #save client json
+        save_client({"Client": client_list})
+        #save hotel
+        save_hotel(hotel)
 
 #Function to prompt for client information
 def get_client_data():
     id = input("Enter client ID: ")
     name = input("Enter client name: ")
     email = input("Enter client email: ")
-    number_nights = int(input("Enter number of nights: "))
-    id_services = input("Enter service IDs (comma-separated): ").split(',')
     phone_number = input("Enter client phone number: ")
+
+    return client_class(id, name, email, True, phone_number)
+
+#Fuction to promt for services and payment information
+def get_invoice_data(client_id):
+    id_gen = IdGenerator()
+    id = id_gen.get_Id(invoice_class, files_names[3])
+    number_nights = int(input("Enter number of nights: "))
+    id_services = input("Enter service IDs (comma-separated)(no space): ").split(',')
     payment_method = input("Enter payment method: ")
-    return client_class(id, name, email, number_nights, id_services, phone_number, payment_method, 0)
+    departure_date = (current_date + timedelta(days=number_nights))
+    return invoice_class(id, client_id, number_nights, id_services, current_date.strftime("%d/%m/%Y %H:%M:%S"), departure_date.strftime("%d/%m/%Y %H:%M:%S"), payment_method, 0)
 
 #Fuction that uses a Generator to iterate over services in 'Restaurants' and 'Spas'
 def services_used(hotel_services, id_services):
@@ -203,13 +286,13 @@ def services_used(hotel_services, id_services):
                 yield service
 
 #Function to calculate the total cost for the client
-def calculate_total(client, hotel):
+def calculate_total(invoice, hotel):
     #Create a generator for the client's used services
-    used_services = services_used(hotel['services'], client.id_services)
+    used_services = services_used(hotel['services'], invoice.id_services)
     #Use the service_generator to iterate over all services and string methods
     total = sum(float(service['price'].strip('$')) for service in used_services)
     #Add the price per night, and using string methods
-    total += float(hotel["price_night"].strip("$")) * client.number_nights
+    total += float(hotel["price_night"].strip("$")) * invoice.number_nights
     return total
 
 #Function to add client information and calculate total cost
@@ -222,17 +305,43 @@ def add_client(hotel: hotel_class):
     except ValueError:
         print("Error on number of rooms available, check file")
     
-    #Call "get_client_data" fuction
+    clear_console()
+    print("-------------------")
+    print("Adding a client")
+    print("-------------------")
+
+    #Call "get_client_data" function
     client = get_client_data()
 
+    #Call "get_invoice_data " function
+    invoice = get_invoice_data(client.id)
+
     #Calculate total and updates it
-    client.total = calculate_total(client, hotel)
+    invoice.total = calculate_total(invoice, hotel)
 
     #Update hotel data 
-    update_available_rooms(hotel)
+    update_available_rooms(hotel, True)
+
+    client_list = None
+    invoice_list = None
+
+    #check if client and invoice .json files exist 
+    if check_if_file_exist(files_names[2]) and check_if_file_exist(files_names[3]):
+        data_a = load_client_file()
+        data_b = load_invoice_file()
+        client_list = data_a[client_class.__name__]
+        invoice_list = data_b[invoice_class.__name__]
+    else:
+        client_list = []
+        invoice_list = []
     
+    client_list.append(client)
+    invoice_list.append(invoice)
+
     #Save client json
-    save_client(client)
+    save_client({client_class.__name__: client_list})
+    #Save invloice json
+    save_invoice({invoice_class.__name__: invoice_list})
 
 #Function to display "add new hotel" options, therefore it will create a new hotel.
 def show_create_hotel_menu():
@@ -271,6 +380,8 @@ def show_create_hotel_menu():
 #Fuction to display and capture the option of the "Hotel main menu"
 def show_menu_hotel():
     hotel1 = load_hotel_file()
+    #updating rooms
+    update_available_rooms(hotel1, False)
     while True:
         print("-------------------")
         print("-*-*-*-*-*-*-*-> Hotel: " + hotel1.name)
@@ -298,13 +409,13 @@ def show_menu_hotel():
             print("1- Show all Restaurants")
             print("2- Add services")
             #checking if there is any restaurant, otherwise it will not print the options
-            if len(hotel1.services["Restaurants"]) >= 1:
+            if len(hotel1.services[restaurant_class.__name__]) >= 1:
                 print("3- Edit specific restaurant by ID")
                 print("4- Delete specific restaurant by ID")
 
             print("6- Show all Spa")
             #checking if there is any Spa, otherwise it will not print the options
-            if len(hotel1.services["Spas"]) >= 1:
+            if len(hotel1.services[spa_class.__name__]) >= 1:
                 print("7- Edit specific Spa by ID")
                 print("8- Delete specific Spa by ID")
 
@@ -314,7 +425,7 @@ def show_menu_hotel():
             #Filtering option selected by the user
             if (option_value == 1) or (option_value ==6):
                 #printing every restaurant or spa
-                print(hotel1.services["Restaurants" if option_value == 1 else "Spas"])
+                print(hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__])
             elif option_value == 2:
                 #calling add services fuction, sending 2 atributes, new services to a not new hotel, and current hotel information.
                 hotel1.services = add_services(True, hotel1)
@@ -330,17 +441,17 @@ def show_menu_hotel():
                 #flag to exit the loop
                 flag = True
                 #looking which restaurant has the id typed by the user, !!those ternarial comparations need to be improved!!!.
-                for index, value in enumerate(hotel1.services["Restaurants" if is_restaurant  else "Spas"]):
+                for index, value in enumerate(hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__]):
                     #new dictionary that will create a new format to storage a number key for every item that will be printed
                     class_dict = {}
                     #displaying options
-                    if hotel1.services["Restaurants" if is_restaurant  else "Spas"][index]["id"] == by_id:
+                    if hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__][index]["id"] == by_id:
                         #LOOP in case user wants to continue modifying
                         while flag:
                             #verifying delete option
                             if (option_value == 4) or (option_value == 8):
                                 #deleting element on the list by index
-                                del hotel1.services["Restaurants" if is_restaurant else "Spas"][index]
+                                del hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__][index]
                                 save_hotel(hotel1)
                                 flag = False
                             #Continue with editing
@@ -351,7 +462,7 @@ def show_menu_hotel():
                                 # Counter for keys in class_dict
                                 counter = 1
                                 # Iterate through items, and printing options
-                                for key, value in hotel1.services["Restaurants" if is_restaurant  else "Spas"][index].items():
+                                for key, value in hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__][index].items():
                                     #storaring data in the "class_dict" dictionary
                                     class_dict[counter] = [key, value]
                                     print(f"{counter} - {key} : {value}")
@@ -375,7 +486,7 @@ def show_menu_hotel():
                                     #restaurant_dict[option][0] = which attribute in the dictionary will be modified
 
                                     #aplying modification in the hotel
-                                    hotel1.services["Restaurants" if is_restaurant else "Spas"][index][class_dict[option][0]] = new_value
+                                    hotel1.services[restaurant_class.__name__ if option_value == 1 else spa_class.__name__][index][class_dict[option][0]] = new_value
                                     #calling "save_hotel". Saving hotel
                                     save_hotel(hotel1)
                                                 

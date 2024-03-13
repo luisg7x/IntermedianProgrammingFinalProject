@@ -1,0 +1,29 @@
+{
+    "Invoice": [
+        {
+            "id": "IOE-000",
+            "id_client": "3253585",
+            "number_nights": 2,
+            "id_services": [
+                "SPA-001"
+            ],
+            "issue_date": "13/03/2024 14:42:15",
+            "departure_date": "15/03/2024 14:42:15",
+            "payment_method": "Cash",
+            "total": 119.99
+        },
+        {
+            "id": "IOE-001",
+            "id_client": "5774444",
+            "number_nights": 9,
+            "id_services": [
+                "RUT-001",
+                "SPA-001"
+            ],
+            "issue_date": "13/03/2024 14:42:15",
+            "departure_date": "22/03/2024 14:42:15",
+            "payment_method": "Cash",
+            "total": 499.99
+        }
+    ]
+}

@@ -1,13 +1,18 @@
 {
-    "id": "4-4444-4444",
-    "name": "Juan",
-    "email": "juach@gmail.com",
-    "number_nights": 3,
-    "id_services": [
-        "RT-000",
-        "S-000"
-    ],
-    "phone_number": "8441-11-47",
-    "payment_method": "Cash",
-    "total": 169.99
+    "Client": [
+        {
+            "id": "3253585",
+            "name": "Juan",
+            "email": "jksuan@gamil.com",
+            "is_currently_hosted": false,
+            "phone_number": "3542466"
+        },
+        {
+            "id": "5774444",
+            "name": "Karl",
+            "email": "kasl@gmail.com",
+            "is_currently_hosted": false,
+            "phone_number": "54545747"
+        }
+    ]
 }
