@@ -29,12 +29,13 @@ class IdGenerator:
             #Check if 'services' key is in the JSON data
             if 'services' in data:
                 # Extract IDs from 'Restaurant' and 'Spa' services
-                for service_type in ['Restaurant' if class_name.lower() == "restaurant" else 'Spa']:
+                for service_type in [class_name]:
                     if service_type in data['services']:
                         for service in data['services'][service_type]:
                             ids.append(service['id'])
-            elif 'id' in data:
-                ids.append(data['id'])
+            elif class_name in data:
+                for value in data[class_name]:
+                    ids.append(value['id'])
 
             if len(ids) < 1:
                 ids.append(self.__create_zero_id(class_name))

@@ -8,7 +8,7 @@
                 "SPA-001"
             ],
             "issue_date": "13/03/2024 14:42:15",
-            "departure_date": "15/03/2024 14:42:15",
+            "departure_date": "13/03/2024 14:42:15",
             "payment_method": "Cash",
             "total": 119.99
         },
@@ -24,6 +24,44 @@
             "departure_date": "22/03/2024 14:42:15",
             "payment_method": "Cash",
             "total": 499.99
+        },
+        {
+            "id": "IOE-002",
+            "id_client": "8844444",
+            "number_nights": 9,
+            "id_services": [
+                "RUT-003",
+                "SPA-001"
+            ],
+            "issue_date": "13/03/2024 16:54:25",
+            "departure_date": "22/03/2024 16:54:25",
+            "payment_method": "Card",
+            "total": 504.99
+        },
+        {
+            "id": "IOE-003",
+            "id_client": "32546",
+            "number_nights": 3,
+            "id_services": [
+                "RUT-002"
+            ],
+            "issue_date": "13/03/2024 17:01:50",
+            "departure_date": "16/03/2024 17:01:50",
+            "payment_method": "Card",
+            "total": 174.0
+        },
+        {
+            "id": "IOE-004",
+            "id_client": "8774555",
+            "number_nights": 1,
+            "id_services": [
+                "RUT-003",
+                "SPA-001"
+            ],
+            "issue_date": "13/03/2024 17:01:50",
+            "departure_date": "14/03/2024 17:01:50",
+            "payment_method": "card",
+            "total": 104.99
         }
     ]
 }

@@ -2,7 +2,7 @@
     "name": "FLAMINGO",
     "address": "Calle Remilia",
     "number_of_rooms": "50",
-    "available_rooms": "56",
+    "available_rooms": "45",
     "price_night": "50$",
     "services": {
         "Restaurant": [
@@ -32,7 +32,7 @@
                 "id": "RUT-003",
                 "name": "Rescot",
                 "schedule": "2h-20h",
-                "price": "35$",
+                "price": "40$",
                 "availability": "YES",
                 "capacity": "64",
                 "location": "First Floor",

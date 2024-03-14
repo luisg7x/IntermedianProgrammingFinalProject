@@ -5,14 +5,35 @@
             "name": "Juan",
             "email": "jksuan@gamil.com",
             "is_currently_hosted": false,
-            "phone_number": "3542466"
+            "phone_number": "88744455"
         },
         {
             "id": "5774444",
             "name": "Karl",
             "email": "kasl@gmail.com",
-            "is_currently_hosted": false,
+            "is_currently_hosted": true,
             "phone_number": "54545747"
+        },
+        {
+            "id": "8844444",
+            "name": "Nan",
+            "email": "nandh@gmail.com",
+            "is_currently_hosted": true,
+            "phone_number": "65444444"
+        },
+        {
+            "id": "32546",
+            "name": "skdfs",
+            "email": "fewf",
+            "is_currently_hosted": true,
+            "phone_number": "34235"
+        },
+        {
+            "id": "8774555",
+            "name": "Lsissf",
+            "email": "fkjdhg",
+            "is_currently_hosted": true,
+            "phone_number": "3354266"
         }
     ]
 }
