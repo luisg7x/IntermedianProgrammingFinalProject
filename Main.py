@@ -1,6 +1,7 @@
 from Misc.JsonManager import JsonManager
 from Misc.Login import Login
 from Misc.IdGenerator import IdGenerator
+from Misc.ServiceIterator import ServicesIterator
 from Hotel import Hotel as hotel_class
 from Staff import Staff as staff_class
 from Services.Restaurant import Restaurant as restaurant_class
@@ -248,20 +249,10 @@ def get_invoice_data(client_id):
     departure_date = (current_date + timedelta(days=number_nights))
     return invoice_class(id, client_id, number_nights, id_services, current_date.strftime("%d/%m/%Y %H:%M:%S"), departure_date.strftime("%d/%m/%Y %H:%M:%S"), payment_method, 0)
 
-#Fuction that uses a Generator to iterate over services in 'Restaurants' and 'Spas'
-def services_used(hotel_services, id_services):
-    #Iterate over each category in services
-    for category in hotel_services:
-        #Iterate over each service in the category
-        for service in hotel_services[category]:
-            #Check if the service ID is in the list of service IDs
-            if service['id'] in id_services:
-                yield service
-
 #Function to calculate the total cost for the client
 def calculate_total(invoice, hotel):
-    #Create a generator for the client's used services
-    used_services = services_used(hotel['services'], invoice.id_services)
+    #Create an instance of the ServicesIterator
+    used_services = ServicesIterator(hotel['services'], invoice.id_services)
     #Use the service_generator to iterate over all services and string methods
     total = sum(float(service['price'].strip('$')) for service in used_services)
     #Add the price per night, and using string methods
@@ -300,10 +291,8 @@ def add_client(hotel: hotel_class):
 
     #check if client and invoice .json files exist 
     if check_if_file_exist(get_save_file_name(client_class)) and check_if_file_exist(get_save_file_name(invoice_class)):
-        data_a = get_save_file_name(client_class)
-        data_b = get_save_file_name(invoice_class)
-        client_list = data_a[client_class.__name__]
-        invoice_list = data_b[invoice_class.__name__]
+        client_list = load_json_file(get_save_file_name(client_class))[client_class.__name__]
+        invoice_list = load_json_file(get_save_file_name(invoice_class))[invoice_class.__name__]
 
         #checks if user id already exists
         for diccionario in client_list:
