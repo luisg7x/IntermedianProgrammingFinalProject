@@ -39,15 +39,22 @@
             "id": "3252355",
             "name": "name",
             "email": "24214rf",
-            "is_currently_hosted": true,
+            "is_currently_hosted": false,
             "phone_number": "23"
         },
         {
             "id": "157454",
             "name": "name2",
             "email": "fiskfsf",
-            "is_currently_hosted": true,
+            "is_currently_hosted": false,
             "phone_number": "21424241"
+        },
+        {
+            "id": "42354466",
+            "name": "Luis",
+            "email": "luis@gmail.com",
+            "is_currently_hosted": true,
+            "phone_number": "84444522"
         }
     ]
 }

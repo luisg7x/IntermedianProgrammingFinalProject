@@ -86,6 +86,19 @@
             "departure_date": "26/03/2024 14:42:20",
             "payment_method": "CASH",
             "total": 124.0
+        },
+        {
+            "id": "IOE-007",
+            "id_client": "42354466",
+            "number_nights": 5,
+            "id_services": [
+                "RUT-001",
+                "SPA-001"
+            ],
+            "issue_date": "02/04/2024 19:02:29",
+            "departure_date": "07/04/2024 19:02:29",
+            "payment_method": "Efectivo",
+            "total": 299.99
         }
     ]
 }

@@ -4,9 +4,10 @@ class IdGenerator:
     def __increment_id(self, id_str: str) -> str:
         #Split the ID into the prefix and the number
         prefix = id_str.rstrip('0123456789')
+        #RU-044 -> PREFIX = RU- -> NUM_PART = 044 (FROM PREFIX LOCATION OR LENGH TO THE END)
         num_part = id_str[len(prefix):]
         
-        #Increment the number part
+        #Increment the number part - ZFILL ADDS 0 TILL THE LENGH IS REACHED (over 099 it wont add more at the beginning 0)
         new_num_part = str(int(num_part) + 1).zfill(len(num_part))
         
         #Combine them back together
@@ -59,7 +60,9 @@ class IdGenerator:
         if not JsonManager.check_if_file_exist(file_name):
             return self.__create_zero_id(class_name)
         
+        #Get largest ID
         largest_id = self.__find_largest_id(class_name, file_name)
+        #Increment the ID and it is returned
         return self.__increment_id(largest_id)
         
 

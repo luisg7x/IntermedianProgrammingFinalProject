@@ -1,14 +1,14 @@
 {
-    "name": "FLAMINGO",
+    "name": "HOTEL A",
     "address": "Calle Remilia",
     "number_of_rooms": "50",
-    "available_rooms": "44",
+    "available_rooms": "49",
     "price_night": "50$",
     "services": {
         "Restaurant": [
             {
                 "id": "RUT-001",
-                "name": "Rosseta",
+                "name": "Rosseta32",
                 "schedule": "12h-22h",
                 "price": "30$",
                 "availability": "YES",
@@ -49,6 +49,15 @@
                 "availability": "YES",
                 "capacity": "15",
                 "location": "Four Floor"
+            },
+            {
+                "id": "SPA-002",
+                "name": "Spa2",
+                "schedule": "7h-20h",
+                "price": "50",
+                "availability": "SI",
+                "capacity": "SI",
+                "location": "Tercer piso"
             }
         ]
     }
