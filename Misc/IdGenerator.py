@@ -29,7 +29,7 @@ class IdGenerator:
             
             #Check if 'services' key is in the JSON data
             if 'services' in data:
-                # Extract IDs from 'Restaurant' and 'Spa' services
+                #Extract IDs from 'Restaurant' and 'Spa' services
                 for service_type in [class_name]:
                     if service_type in data['services']:
                         for service in data['services'][service_type]:

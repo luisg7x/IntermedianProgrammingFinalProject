@@ -36,7 +36,9 @@ files_names = (
 #Getting the current date
 current_date = datetime.now()
 
-#REGISTERING ADMIN FOR FIRST TIME (!!!ONLY RUN IF THERE IS NOT AN ADMIN USER YET!!!)
+#DEFAULT ADMIN USER AND PASS: admin / admin
+
+#REGISTERING ADMIN FOR FIRST TIME (!!! ONLY RUN IF THERE IS NOT AN ADMIN USER REGISTERED YET!!!)
 #staff1 = staff("1-1111-1111", "Admin", "Admin", "Admin", "Admin")
 #JsonManager.save_as_json(staff1, "Staff.json")
 #print("saved")
@@ -474,7 +476,7 @@ def show_menu_hotel():
                                     #asking the user for a value that will modify the previous one
                                     new_value = input(f"Type the new value for {option} - {class_dict[option][0]} : {class_dict[option][1]} -->")
                                   
-                                    #Iterate bewtween every attribute on class restaurant
+                                    #Iterate between every attribute on class restaurant
                                     #for attr in vars(rest1):
                                         #if attribute exist i'll be changed
                                     # if attr == restaurant_dict[option][0]:
@@ -499,7 +501,8 @@ def show_menu_hotel():
                     #check is if the loop has to be broken
                     if flag is not True:
                         break
-                
+
+        #!!!!!! CLASSIC OR EASIER WAY to implement it:       
         #checks if the value is 4 and print the options
         elif service_value == 4:
             print("------------------------------------------------")
